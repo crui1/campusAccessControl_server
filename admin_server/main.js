@@ -4,8 +4,8 @@ const express = require('express')
 const cors = require('cors')
 // 导入路由模块
 const reg_login = require("./router/user");
-const userInfo = require('./router/userInfo')
-const admin = require('./router/admin')
+const userInfo = require('./router/userInfo');
+const admin = require('./router/admin');
 // 导入joi 定义表单验证模式
 const Joi = require('joi');
 // 导入jwt字符串解析模块
