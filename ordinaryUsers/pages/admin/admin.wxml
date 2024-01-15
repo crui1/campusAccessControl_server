@@ -1,0 +1,95 @@
+<view class="box">
+	<van-empty wx:if="{{!listData.length}}" description="没有更多信息了..." />
+	<van-tabs wx:else swipeable lazy-render sticky line-width="50px">
+		<van-tab title-style="font-size: 12pt;font-weight: bolder" title="待审核">
+			<view class="card2" wx:for="{{listData}}" wx:key="id" wx:if="{{item.state==0}}">
+				<view class="name flex">
+					{{item.name}}
+					<view class="btn-group">
+						<van-button round plain type="danger" data-id="{{item.id}}" size="small" bind:click="refuse">不同意</van-button>
+						<van-button round plain type="primary" size="small" data-id="{{item.id}}" bind:click="agree">同意</van-button>
+					</view>
+				</view>
+				<view class="card-content">
+					<view class="line">
+						<text>通行次数：</text>
+						<text>{{item.time}}</text>
+					</view>
+					<view class="line">
+						<text>有效期：</text>
+						<view>{{f.splitf(item.validityDate)}}</view>
+					</view>
+					<view class="mini-container">
+						<view class="mini-card">
+							<text class="title">申请理由</text>
+							<view class="mini-content">{{item.reason}}</view>
+						</view>
+						<view class="mini-card">
+							<text class="title">添加备注</text>
+							<textarea model:value="{{remark}}" class="mini-content" placeholder="输入备注..."></textarea>
+						</view>
+					</view>
+				</view>
+			</view>
+		</van-tab>
+		<van-tab title-style="font-size: 12pt;font-weight: bolder" title="审核通过">
+			<view class="card2" wx:for="{{listData}}" wx:key="id" wx:if="{{item.state==1}}">
+				<view class="name">{{item.name}}</view>
+				<view class="card-content">
+					<view class="line">
+						<text>通行次数：</text>
+						<text>{{item.time}}</text>
+					</view>
+					<view class="line">
+						<text>审核时间：</text>
+						<view>{{f.ft(item.reviewDate)}}</view>
+					</view>
+					<view class="line">
+						<text>有效期：</text>
+						<view>{{f.splitf(item.validityDate)}}</view>
+					</view>
+					<view class="mini-container">
+						<view class="mini-card">
+							<text class="title">申请理由</text>
+							<view class="mini-content">{{item.reason}}</view>
+						</view>
+						<view class="mini-card">
+							<text class="title">审核备注</text>
+							<view class="mini-content">{{item.tcRemark||'无'}}</view>
+						</view>
+					</view>
+				</view>
+			</view>
+		</van-tab>
+		<van-tab title-style="font-size: 12pt;font-weight: bolder" title="审核不通过">
+			<view class="card2" wx:for="{{listData}}" wx:key="id" wx:if="{{item.state==2}}">
+				<view class="name">{{item.name}}</view>
+				<view class="card-content">
+					<view class="line">
+						<text>通行次数：</text>
+						<text>{{item.time}}</text>
+					</view>
+					<view class="line">
+						<text>审核时间：</text>
+						<view>{{f.ft(item.reviewDate)}}</view>
+					</view>
+					<view class="line">
+						<text>有效期：</text>
+						<view>{{f.splitf(item.validityDate)}}</view>
+					</view>
+					<view class="mini-container">
+						<view class="mini-card">
+							<text class="title">申请理由</text>
+							<view class="mini-content">{{item.reason}}</view>
+						</view>
+						<view class="mini-card">
+							<text class="title">审核备注</text>
+							<view class="mini-content">{{item.tcRemark||'无'}}</view>
+						</view>
+					</view>
+				</view>
+			</view>
+		</van-tab>
+	</van-tabs>
+</view>
+<wxs src="../../utils/util.wxs" module="f"></wxs>

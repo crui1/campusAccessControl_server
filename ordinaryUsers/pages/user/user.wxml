@@ -1,0 +1,73 @@
+<view class='all'>
+	<!-- 基本信息 -->
+	<view class="my-head">
+		<view class='my-user-information'>
+			<text class="tips">tips: 点击更换头像</text>
+			<image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.pic||default_pic}}" mode="cover"></image>
+			<view wx:if="{{userInfo.isTc}}">
+				<view class="userinfo-name">{{userInfo.name}} 老师,欢迎您</view>
+				<view>管理班级：{{userInfo.class? userInfo.class: '暂无'}}</view>
+			</view>
+			<view wx:else>
+				<view class="userinfo-name">{{userInfo.name}} 同学,欢迎您</view>
+				<view>
+					所在班级：{{userInfo.class? userInfo.class: '暂未分班'}}
+				</view>
+			</view>
+		</view>
+	</view>
+	<!-- 通行申请按钮 -->
+	<view wx:if="{{!userInfo.isTc}}" bindtap="goEntry" class="my-block bord10">
+		<image class="icon-w48" src="../../images/myUser/keep.png"></image>
+		申请进出
+		<image class="icon-goRight" src="../../images/myUser/goRight.png"></image>
+	</view>
+	<!-- 人脸信息 -->
+	<view bindtap="myCollect" class="my-block bord10" bindtap="faceClick">
+		<image class="icon-w48" src="../../images/myUser/faceentry.png"></image>
+		人脸信息
+		<image class="icon-goRight" src="../../images/myUser/goRight.png"></image>
+	</view>
+	<!-- 邮箱信息 -->
+	<view bindtap="businessInfo" class="my-block bord10">
+		<image class="icon-help" src="../../images/myUser/help.png"></image>
+		我的邮箱： {{userInfo.email||'未设置邮箱'}}
+		<image class="icon-goRight" src="../../images/myUser/goRight.png"></image>
+		<text class="tip">点击修改</text>
+	</view>
+	<!-- 修改密码按钮 -->
+	<view bindtap="showPwdCmp" class="my-block bord10">
+		<image class="icon-w48" src="../../images/myUser/buiness.png"></image>
+		修改密码
+		<image class="icon-goRight" src="../../images/myUser/goRight.png"></image>
+	</view>
+	<!-- 退出登录按钮 -->
+	<view bindtap="logoff" class="my-block">
+		<image class="icon-buiness" src="../../images/myUser/logoff.png"></image>
+		退出登录
+		<image class="icon-goRight" src="../../images/myUser/goRight.png"></image>
+	</view>
+	<!-- 邮箱修改组件 -->
+	<van-popup show="{{ show }}" custom-style=" width: 90%;">
+		<van-cell-group>
+			<van-field model:value="{{ newEmail }}" center label="新邮箱：" placeholder="请输入邮箱">
+			</van-field>
+		</van-cell-group>
+		<view class="md">
+			<van-button class="btn" plain hairline size="small" type="danger" bindtap="cancel">取消</van-button>
+			<van-button plain hairline size="small" type="primary" bindtap="changeEmail">修改</van-button>
+		</view>
+	</van-popup>
+	<!-- 修改密码组件 -->
+	<van-popup show="{{ pwdshow }}" custom-style=" width: 90%;">
+		<van-cell-group>
+			<van-field model:value="{{ oldPwd }}" type="password" label="旧密码" placeholder="请输入旧密码" required border="{{ false }}" />
+			<van-field model:value="{{ newPwd }}" type="password" label="新密码" placeholder="请输入新密码" required border="{{ false }}" />
+			<van-field model:value="{{ reNewPwd }}" type="password" label="确认密码" placeholder="请输入相同新密码" required border="{{ false }}" />
+		</van-cell-group>
+		<view class="md">
+			<van-button class="btn" plain hairline size="small" type="danger" bindtap="cancel">取消</van-button>
+			<van-button plain hairline size="small" type="primary" bindtap="changePwd">修改</van-button>
+		</view>
+	</van-popup>
+</view>

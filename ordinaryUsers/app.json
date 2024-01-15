@@ -1,0 +1,58 @@
+{
+	"pages": [
+		"pages/index/index",
+		"pages/register/register",
+		"pages/history/history",
+		"pages/admin/admin",
+		"pages/user/user",
+		"pages/face/face",
+		"pages/goentry/goentry"
+	],
+	"tabBar": {
+		"custom": true,
+		"backgroundColor": "#fff",
+		"color": "#000",
+		"selectedColor": "#FED61A",
+		"list": [
+			{
+				"pagePath": "pages/admin/admin",
+				"text": "申请管理",
+				"iconPath": "images/tabBar/footer-icon-door.png",
+				"selectedIconPath": "images/tabBar/footer-icon-active_door.png"
+			},
+			{
+				"pagePath": "pages/history/history",
+				"text": "申请记录",
+				"iconPath": "images/tabBar/icon_normal.png",
+				"selectedIconPath": "images/tabBar/icon_pressed.png"
+			},
+			{
+				"pagePath": "pages/user/user",
+				"text": "个人中心",
+				"iconPath": "images/tabBar/footer-icon-04.png",
+				"selectedIconPath": "images/tabBar/footer-icon-04-active.png"
+			}
+		]
+	},
+	"window": {
+		"backgroundTextStyle": "light",
+		"navigationBarBackgroundColor": "#FED61A",
+		"navigationBarTitleText": "校园门禁系统",
+		"navigationBarTextStyle": "black",
+		"backgroundColor": "#757472"
+	},
+	"sitemapLocation": "sitemap.json",
+	"usingComponents": {
+		"van-datetime-picker": "@vant/weapp/datetime-picker/index",
+		"van-picker": "@vant/weapp/picker/index",
+		"van-popup": "@vant/weapp/popup/index",
+		"van-cell": "@vant/weapp/cell/index",
+		"van-cell-group": "@vant/weapp/cell-group/index",
+		"van-field": "@vant/weapp/field/index",
+		"van-button": "@vant/weapp/button/index",
+		"van-icon": "@vant/weapp/icon/index",
+		"van-tab": "@vant/weapp/tab/index",
+		"van-tabs": "@vant/weapp/tabs/index"
+	},
+	"lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,24 @@
+<!--pages/face/face.wxml-->
+<view class="facecontainer">
+	<view wx:if="{{pzbox}}">
+		<view class="main" wx:if="{{pz}}">
+			<camera class="camera" frame-size="large" device-position="front"></camera>
+			<view class="btnouter">
+				<view class='record' bindtap='record'>点击拍照</view>
+			</view>
+		</view>
+		<view wx:if="{{!pz}}">
+			<view class="tips">
+				{{info}}
+			</view>
+			<view class="start-photo">
+				<button bindtap="startpt">点击添加或修改人脸信息</button>
+			</view>
+		</view>
+	</view>
+	<view class="showimg" wx:if="{{!pzbox}}">
+		<image src="{{src}}" class="img"></image>
+		<button class="sur" wx:if="{{!existence}}" bindtap="addFace">确认添加人脸</button>
+		<button class="sur" wx:if="{{existence}}" bindtap="alterFaceInfo">确认修改人脸</button>
+	</view>
+</view>

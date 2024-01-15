@@ -1,0 +1,5 @@
+{
+	"usingComponents": {
+		"my-selector": "../../components/selector/selector"
+	}
+}

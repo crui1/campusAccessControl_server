@@ -1,0 +1,39 @@
+<view class="box">
+	<van-empty wx:if="{{!listData.length}}" description="没有更多信息了..." />
+	<view  class="card2" wx:for="{{listData}}" wx:key="id">
+		<view class="title">
+			<view wx:if="{{item.state==1}}" class="name green">通过</view>
+			<view wx:if="{{item.state==2}}" class="name red">未通过</view>
+			<view wx:if="{{item.state==0}}" class="name orange flex">
+				待审核
+				<van-button wx:if="{{item.state==0}}" round plain type="danger" data-id="{{item.id}}" size="small" bind:click="cnacel">撤销申请</van-button>
+			</view>
+			<view wx:if="{{item.state==3}}" class="name gray">已撤销</view>
+		</view>
+		<view class="card-content">
+			<view class="line">
+				<text>通行次数：</text>
+				<text>{{item.time}}</text>
+			</view>
+			<view class="line">
+				<text>审核时间：</text>
+				<view>{{item.reviewDate?f.ft(item.reviewDate):"暂无"}}</view>
+			</view>
+			<view class="line">
+				<text>有效期：</text>
+				<view>{{f.splitf(item.validityDate)}}</view>
+			</view>
+			<view class="mini-container">
+				<view class="mini-card">
+					<text class="title">申请理由</text>
+					<view class="mini-content">{{item.reason}}</view>
+				</view>
+				<view class="mini-card">
+					<text class="title">审核备注</text>
+					<view class="mini-content">{{item.tcRemark||'无'}}</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</view>
+<wxs src="../../utils/util.wxs" module="f"></wxs>

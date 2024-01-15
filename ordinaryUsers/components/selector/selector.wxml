@@ -1,0 +1,24 @@
+<!--pages/components/my_select/my_select.wxml-->
+<view class="select_all_view">
+	<!-- 内容说明，可以没有 -->
+	<view class="select_title" wx:if="{{title}}">{{title}}</view>
+	<view class="select_view">
+		<view class="inputPlaceholder" bindtap="startChange">
+			<!-- 显示选中的值 -->
+			<text class="t" wx:if='{{select}}'>{{select}}</text>
+			<text class="t" wx:else="{{select}}">{{placeholder}}</text>
+			<view class="jiantou1" wx:if='{{changable}}'>
+				<van-icon name="arrow-down" />
+			</view>
+			<view class="jiantou1" wx:else='{{changable}}'>
+				<van-icon name="arrow" />
+			</view>
+		</view>
+		<!-- 下拉展开后的可选择内容 -->
+		<view class="content" wx:if='{{changable}}'>
+			<view class="{{item.id==selectId ? 'active':''}}" wx:for="{{selectcontent}}" wx:key="idnex" bindtap="changecontent" data-datavalue="{{item}}">
+				{{item.name}}
+			</view>
+		</view>
+	</view>
+</view>

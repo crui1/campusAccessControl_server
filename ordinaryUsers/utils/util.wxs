@@ -1,0 +1,22 @@
+var formatTime = function (date) {
+	date = getDate(parseInt(date))
+	var year = date.getFullYear()
+	var month = (date.getMonth() + 1)
+	var day = date.getDate()
+	var hour = date.getHours()
+	var minute = date.getMinutes()
+	return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute].map(formatNumber).join(':')
+}
+
+var formatNumber = function (n) {
+	return n < 10 ? '0' + n : n
+}
+var splitf = function (times='') {
+	var li = times.split('/')
+	var st = formatTime(li[0])
+	var et = formatTime(li[1])	
+	return st+' ~ '+et
+}
+
+module.exports.ft = formatTime
+module.exports.splitf = splitf

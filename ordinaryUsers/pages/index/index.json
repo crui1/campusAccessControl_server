@@ -1,0 +1,8 @@
+{
+    "backgroundTextStyle":"light",
+    "navigationBarTitleText": "登录",
+	"navigationBarTextStyle":"black",
+	"usingComponents": {
+		"my-selector": "../../components/selector/selector"
+	}
+}

@@ -1,0 +1,64 @@
+<view class="container">
+
+	<view class="login-icon">
+		<image class="login-img" src="../../images/login/kk.jpg"></image>
+	</view>
+	<view class="login-from">
+		<!-- 账户类型 -->
+		<my-selector
+		title="账户类型："
+		bind:handleChange="_changeType"
+		></my-selector>
+		<!-- 班级选择器-->
+		<van-popup 
+		show="{{ show }}" 
+		position="bottom" 
+		custom-style="height: 30%;" 
+		bind:close="onClose">
+			<van-picker 
+			columns="{{ columns }}" 
+			default-index="{{ 0 }}" 
+			bind:change="onChange" />
+		</van-popup>
+		<!-- 班级展示 -->
+		<van-cell title="选择班级:" 
+		is-link 
+		title-class="cell-title"
+		value-class="cell-value"
+		value="{{columns[classID]}}" 
+		arrow-direction="{{position}}" 
+		bind:click="showPopup" />
+		<view class="line"></view>
+
+		<!-- 姓名 -->
+		<view class="inputView">
+			<image class="nameImage" src="../../images/login/name.png"></image>
+			<label class="loginLab">姓名</label>
+			<input class="inputText" placeholder="请输入姓名" bindinput="nameIt" />
+		</view>
+		<!--学号-->
+		<view class="inputView">
+			<image class="nameImage" src="../../images/login/name.png"></image>
+			<label class="loginLab">账号</label>
+			<input class="inputText" placeholder="请输入学号/工号" bindinput="accountInput" />
+		</view>
+
+
+		<!--密码-->
+		<view class="inputView">
+			<image class="keyImage" src="../../images/login/key.png"></image>
+			<label class="loginLab">密码</label>
+			<input class="inputText" password="true" placeholder="请输入密码" bindinput="passwordInput" />
+		</view>
+		<view class="inputView">
+			<image class="keyImage" src="../../images/login/key.png"></image>
+			<label class="loginLab">密码</label>
+			<input class="inputText" password="true" placeholder="再次输入密码" bindinput="passwordInputConfirm" />
+		</view>
+
+		<!--按钮-->
+		<view class="loginBtnView">
+			<button class="loginBtn" type="primary" size="{{primarySize}}" loading="{{loading}}" plain="{{plain}}" disabled="{{disabled}}" bindtap="onregisterClick">注册</button>
+		</view>
+	</view>
+</view>

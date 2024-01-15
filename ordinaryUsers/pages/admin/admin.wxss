@@ -1,0 +1,71 @@
+.box{
+	padding-bottom: 52px;
+}
+.card2{
+	border-radius: 10px;
+	margin: 10px 6px;
+	padding: 8px;
+	box-shadow: 0 1px 10px 1px #424242;
+}
+.card2>.name{
+	text-align: center;
+	font-size: 15pt;
+	font-weight: bold;
+	margin-bottom: 6px;
+	padding-bottom: 6px;
+	border-radius: 3px;
+	border-bottom: 4px dotted gray;
+}
+.card2>.card-content .line{
+	width: fit-content;
+	padding: 6px;
+	margin-bottom: 6px;
+	border-radius: 6px;
+	background-color: #e5f7f8;
+	box-shadow: inset 0 0 6px gray;
+}
+.card2>.card-content .line view{
+	color: rgb(100, 100, 100);
+}
+.card2 text{
+	font-size: 13pt;
+}
+
+.mini-container{
+	display: flex;
+	justify-content: center;
+	column-gap: 6px;
+}
+.mini-container .mini-card{
+	width: 49%;
+	height: 120px;
+	padding: 1px;
+	border-radius: 6px;
+	background-color: #e5f7f8;
+	box-shadow:inset 0 0 6px #525252;
+}
+
+.mini-container .mini-card .title{
+	display: block;
+	text-align: center;
+}
+.mini-container .mini-card .mini-content{
+	height: 80%;
+	border-radius: 6px;
+	padding: 6px;
+	/* background-color: #def1f1; */
+	box-shadow: inset 0 0 6px #acc8c8;
+	box-sizing: border-box;
+}
+.flex{
+ display: flex;
+ justify-content: space-between;
+ gap: 12px;
+}
+.btn-group{
+	display: flex;
+	gap: 6px;
+}
+.mini-content{
+	width: 100%;
+}

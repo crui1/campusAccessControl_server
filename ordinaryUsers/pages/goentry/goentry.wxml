@@ -1,0 +1,27 @@
+<view class='all-other'>
+	<view class='visitors'>
+		<view class='visitors-information'>申请信息</view>
+		<view class='visitors-detail'>
+			<view class="fiexd">姓名: {{name}}</view>
+			<view class="fiexd">专业班级：{{class}}</view>
+			<view>
+				<text>通行趟数: </text>
+				<input auto-focus model:value="{{times}}" type="number" placeholder="请输入通行趟数" />
+			</view>
+			<view bindtap="selectTime" data-id="1">开始时间: {{f.ft(startDate)}}</view>
+			<view bindtap="selectTime" data-id="2">结束时间: {{f.ft(endDate)}}</view>
+			<textarea style="background: rgb(241, 241, 241);padding: 10px; width: 100%;box-sizing: border-box" maxlength="50" placeholder="请输入通行理由... " model:value="{{reason}}"></textarea>
+		</view>
+	</view>
+</view>
+<view class='button-submit'>
+	<view class='total-price'></view>
+	<view class='buying' bindtap='submit'>
+		<text>提交申请</text>
+	</view>
+</view>
+<!-- 时间选择器 -->
+<van-popup show="{{ flag }}" position="bottom" custom-style="height: 36%;" bind:close="onClose">
+	<van-datetime-picker type="datetime" value="{{ currentDate }}" min-date="{{ minDate }}" title="{{titleText}}" visible-item-count="3" bind:confirm="changeTime" />
+</van-popup>
+<wxs src="../../utils/util.wxs" module="f"></wxs>
