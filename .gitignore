@@ -37,3 +37,7 @@ dist
 */*.njsproj
 */*.sln
 */*.sw?
+
+*.docx
+*.xmind
+*.pptx
