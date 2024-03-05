@@ -7,5 +7,5 @@
 ## 运行服务
 
 ```cmd
-node main.js
+npm run serve
 ```
