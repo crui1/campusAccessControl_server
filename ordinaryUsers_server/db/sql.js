@@ -3,7 +3,7 @@ const sql = {
   getInfo: (table, where = '') => `SELECT u.email,u.name,u.pic,c.name as class  FROM ${table} as u left join class as c on u.classID=c.id ${where}`,
   selPwd: (table) => `select password from ${table} where id=?`,
   update: (table) => `update ${table} set ? where id=?`,
-  getApp: (where = undefined) => `select * from application_logs ${where}`,
+  getApp: (where = '') => `select * from view_application_logs ${where}`,
   getFaceInfo: `select * from face where id=?`,
   postFaceInfo: `insert into face set ?`,
   updateFaceInfo: `update face set ? where id=?`,

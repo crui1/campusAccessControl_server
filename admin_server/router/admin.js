@@ -26,7 +26,7 @@ router.post('/deleteTeacher', expressJoi(deleteAccount), adminHandler.delete('te
 //修改 管理的账户和班级信息
 // 需要验证表单信息
 // 设置班级班主任
-router.post('/alterClass', expressJoi(alterClass), adminHandler.updateClass)
+router.post('/alterClass', expressJoi(alterClass), adminHandler.updateClassMasterTeacher)
 router.post('/cancelHeadmaster', expressJoi(alterClass), adminHandler.cancelHeadmaster)
 router.post('/alterStudent', expressJoi(alterAccount), adminHandler.update('students'))
 

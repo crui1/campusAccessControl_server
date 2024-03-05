@@ -4,7 +4,7 @@ const db = require('../db/index');
 const bcrypt = require('bcryptjs');
 // 导入查询语句模块
 const sqlText = require('../db/sql');
-
+const { SUCCESSSTATE } = require("../constant")
 // 获取当前用户信息 
 // 参数 无
 exports.getUserinfo = (req, res) => {
@@ -26,7 +26,7 @@ exports.getUserinfo = (req, res) => {
     results[0].isTc = req.user.isTc
     console.log(results[0]);
     res.send({
-      code: 200,
+      code: SUCCESSSTATE,
       message: '获取用户基本信息成功！',
       data: results[0],
     })
@@ -67,7 +67,7 @@ exports.upPic = (req, res) => {
     //执行语句影响行数不位1
     if (results.affectedRows !== 1) return res.cc('更新头像失败')
 
-    res.cc('头像更新成功', 200)
+    res.cc('头像更新成功', SUCCESSSTATE)
   })
 }
 
@@ -86,7 +86,7 @@ exports.upEmail = (req, res) => {
     if (results.affectedRows !== 1) return res.cc('修改用户基本信息失败！')
 
     // 修改用户信息成功
-    res.cc('邮箱更新成功！', 200)
+    res.cc('邮箱更新成功！', SUCCESSSTATE)
   })
 
 }
@@ -124,7 +124,7 @@ exports.upPassword = (req, res) => {
       //执行语句影响行数不位1
       if (results.affectedRows !== 1) return res.cc('更新密码失败')
 
-      res.cc('密码更新成功', 200)
+      res.cc('密码更新成功', SUCCESSSTATE)
     })
   })
 }
@@ -138,7 +138,7 @@ exports.postFacePic = (req, res) => {
     if (err) return res.cc(err)
     console.log(result);
     if (result.affectedRows !== 1) res.cc('人脸添加失败')
-    res.cc('人脸添加成功', 200)
+    res.cc('人脸添加成功', SUCCESSSTATE)
   })
 }
 // 修改人脸信息
@@ -149,7 +149,7 @@ exports.alterFacePic = (req, res) => {
   db.query(sql, [{ features: '修改人脸特征字段信息' }, req.user.account], (err, result) => {
     if (err) return res.cc(err)
     if (result.affectedRows !== 1) return res.cc('修改失败,请稍后再试')
-    res.cc('修改成功', 200)
+    res.cc('修改成功', SUCCESSSTATE)
   })
 }
 // 人脸查询 id,feature

@@ -11,6 +11,8 @@ const config = require('../config');
 // 导入sql语句
 const sqlText = require('../db/sql')
 
+const { SUCCESSSTATE } = require('../constant')
+
 // 注册处理模块
 // 接口参数
 //     名称         是否必填
@@ -53,7 +55,7 @@ exports.register = (req, res) => {
             // 判断影响行数是否位1
             if (result.affectedRows !== 1) return res.cc('注册失败,请稍后再试!')
             // 注册成功
-            res.cc('注册成功', 200)
+            res.cc('注册成功', SUCCESSSTATE)
         })
     })
 }
@@ -84,7 +86,7 @@ exports.login = (req, res) => {
         let tokenStr = jwt.sign(userObj, config.jwtSecretKey, { expiresIn: config.expires })
 
         res.send({
-            code: 200,
+            code: SUCCESSSTATE,
             message: '登陆成功',
             token: 'Bearer ' + tokenStr
         })
@@ -109,9 +111,9 @@ exports.getClass = (req, res) => {
 // 测试接口处理
 exports.get = (req, res) => {
     console.log(req.query)
-    res.send({ code: 200, message: 'get请求成功', data: req.query })
+    res.send({ code: SUCCESSSTATE, message: 'get请求成功', data: req.query })
 }
 exports.post = (req, res) => {
     console.log(req.body)
-    res.send({ code: 200, message: 'post请求成功', data: req.body })
+    res.send({ code: SUCCESSSTATE, message: 'post请求成功', data: req.body })
 }

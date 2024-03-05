@@ -1,10 +1,10 @@
 {
-  "name": "api_server",
+  "name": "user_api_server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "test": "serve"
+    "serve": "node main.js"
   },
   "keywords": [],
   "author": "",

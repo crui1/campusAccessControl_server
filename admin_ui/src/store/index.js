@@ -54,5 +54,9 @@ export default new Vuex.Store({
       state.students = val
     }
   },
-  getters: {}
+  getters: {},
+
+  modules: {
+
+  }
 })

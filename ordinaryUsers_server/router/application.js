@@ -2,14 +2,16 @@ const express = require('express')
 const router = express.Router()
 const expressJoi = require('@escook/express-joi')
 const { alterApp, postApp, cancelApp } = require('../schema')
-const appHandler = require('../router_handler/application')
+const appHandler = require('../router_handler/application.js')
 
 // TOD 查询申请记录
 // 0: 待审核, 1:审核通过, 2:不通过
 router.get('/getApp', (req, res) => {
+  console.log("获取申请记录")
   if (req.user.isTc) {
     appHandler.tcGetApp(req, res)
   } else {
+    console.log("student query Application Record")
     appHandler.stuGetApp(req, res)
   }
 })

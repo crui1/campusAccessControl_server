@@ -6,10 +6,30 @@ const admin = {
   selPwd: `select password from admin where id=?`,
 
   // 对管理的信息操作
-  // 所有班级
-  getClass: (where = '') => `SELECT c.id,c.name,c.tcID,s.name as sname FROM access.class as c left join access.teachers as s on c.id=s.classID ${where}`,
-  // 所有账户
-  getAllAccount: (table, where = '') => `SELECT u.id,u.account,u.name,u.classID,c.name as cname  FROM ${table} as u left join class as c on u.classID=c.id ${where}`,
+  // 查询
+  queryTeacherClassMap: (where = '') => `SELECT * FROM teacher_class_map ${where}`,
+  queryClass: (where = '') => `
+    SELECT
+        c.id,
+        c.name,
+        tcm.teacher_id AS tcID,
+        teachers.name AS sname
+    FROM
+        class AS c
+    LEFT JOIN teacher_class_map AS tcm ON c.id = tcm.class_id AND tcm.is_master = 1
+    LEFT JOIN teachers ON tcm.teacher_id = teachers.id ${where}`,
+  queryStudentAccounts: (where = '') => `SELECT u.id,u.account,u.name,c.name as cname  FROM students as u left join class as c on u.classID=c.id ${where}`,
+  queryTeacherAccounts: (where = '') => `
+    SELECT
+        u.id,
+        u.account,
+        u.name,
+        cl.name AS cname 
+    FROM
+        teachers AS u
+    LEFT JOIN teacher_class_map AS tcm ON u.id = tcm.teacher_id AND tcm.is_master = 1
+    LEFT JOIN class AS cl ON tcm.class_id = cl.id ${where}`,
+  // 添加
   add: (table) => `insert into ${table} set ?`,
   delete: (table) => `delete from ${table} where id=?`,
   update: (table, where = 'where id=?') => `update ${table} set ? ${where}`,

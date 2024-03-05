@@ -3,10 +3,10 @@ module.exports = {
     expires: '24h',
     regCode: 'fsfap434232df',
     db: {
-        host: "adminmysql",
+        host: "localhost",
         port: "3306",
         user: "root",
-        pwd: "123456",
-        database: "xysw"
+        pwd: "root3397",
+        database: "camp"
     }
 }

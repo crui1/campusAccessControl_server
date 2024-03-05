@@ -50,7 +50,7 @@ const schema = {
     // 学生表单校验规则
     postApp: {
         body: {
-            name: joi.string().min(2).max(12).required(),
+            // name: joi.string().min(2).max(12).required(),
             validityDate: joi.string().required(),
             time: joi.string().alphanum().required(),
             reason: joi.string().required()

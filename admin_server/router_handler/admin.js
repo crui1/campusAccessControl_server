@@ -5,21 +5,27 @@ const bcrypt = require('bcryptjs');
 exports.get = (table) => {
   return async (req, res) => {
     try {
-      let sql = sqlText.getAllAccount(table)
+      let sql = null;
       if (table == 'class') {
-        sql = sqlText.getClass()
-        if (req.query.keyword && req.query.field) sql = sqlText.getClass(`where c.${req.query.field} like "%${req.query.keyword}%"`)
+        sql = sqlText.queryClass()
+        if (req.query.keyword && req.query.field) sql = sqlText.queryClass(`where c.${req.query.field} like "%${req.query.keyword}%"`)
       }
-      if (table == 'students' && req.query.classID) {
-        if (req.query.classID != 0) {
-          sql = sqlText.getAllAccount(table, `where u.classID=${req.query.classID}`)
-        }
-        else if (req.query.classID == 0) {
-          sql = sqlText.getAllAccount(table, `where u.classID is null`)
+      if (table == 'students') {
+        sql = sqlText.queryStudentAccounts()
+        if (req.query.classID) {
+          if (req.query.classID != 0) {
+            sql = sqlText.queryStudentAccounts(`where u.classID=${req.query.classID}`)
+          }
+          else if (req.query.classID == 0) {
+            sql = sqlText.queryTeacherAccounts(`where u.classID is null`)
+          }
         }
       }
-      if (table == 'teachers' && req.query.keyword) {
-        sql = sqlText.getAllAccount(table, `where u.name like "%${req.query.keyword}%"`)
+      if (table == 'teachers') {
+        sql = sqlText.queryTeacherAccounts()
+        if (req.query.keyword) {
+          sql = sqlText.queryTeacherAccounts(`where u.name like "%${req.query.keyword}%"`)
+        }
       }
       // 查询数据
       const [rows] = await db.query(sql)
@@ -107,28 +113,42 @@ exports.update = (table) => {
 // id班级号 T
 // tcID 新班主任 工号 T
 // originalTcID 原班主任工号 F
-exports.updateClass = async (req, res) => {
+exports.updateClassMasterTeacher = async (req, res) => {
   // 如果原来有班主任 
   // 先清空原班主任账户的班级号 
   // 再设置新班主任工号的班级id
   try {
     if (req.body.originTcID) {
-      // 清空原班主任管理的班当前级
-      let sql = sqlText.update('teachers', 'where account=?')
-      let [{ affectedRows }] = await db.query(sql, [{ classID: null }, req.body.originTcID])
+      // 清空原班主任管理is_master
+      let sql = sqlText.update('teacher_class_map', 'where teacher_id=? and class_id=?')
+      let [{ affectedRows }] = await db.query(sql, [{ is_master: 0 }, req.body.originTcID, req.body.id])
       if (affectedRows == 0) return res.cc('修改失败，无相关教师账户数据')
       delete req.body.originTcID
+
+      // 设置 teacher_class_map 新班主任 is_master
+      let up2 = sqlText.update('teacher_class_map', 'where teacher_id=? and class_id=?')
+      let [{ affectedRows: ars }] = await db.query(up2, [{ is_master: 1 }, req.body.tcID, , req.body.id])
+      if (ars == 0) return res.cc('修改失败，无相关教师账户数据')
+      console.log(ars)
     }
-    // 设置新班主任工号的班级ID
-    let up2 = sqlText.update('teachers', 'where account=?')
-    let [{ affectedRows: ars }] = await db.query(up2, [{ classID: req.body.id }, req.body.tcID])
-    if (ars == 0) return res.cc('修改失败，无相关教师账户数据')
-    console.log(ars)
+    const [rows] = await db.query(sqlText.queryTeacherClassMap("where teacher_id=? and class_id=?"), [req.body.tcID, , req.body.id])
+    if (rows.length > 0) {
+      // 设置 teacher_class_map 新班主任 is_master
+      let up2 = sqlText.update('teacher_class_map', 'where teacher_id=? and class_id=?')
+      let [{ affectedRows: ars }] = await db.query(up2, [{ is_master: 1 }, req.body.tcID, , req.body.id])
+      if (ars == 0) return res.cc('修改失败！')
+      console.log(ars)
+    } else {
+      console.log("添加map")
+      let insertSql = sqlText.add("teacher_class_map")
+      const [{ affectedRows }] = await db.query(insertSql, [{ class_id: req.body.id, teacher_id: req.body.tcID, is_master: 1 }])
+      if (affectedRows != 1) return res.cc('添加失败!2')
+    }
     // 设置当前班级新班主任
-    let sql3 = sqlText.update('class')
-    let [{ affectedRows: ar }] = await db.query(sql3, [req.body, req.body.id])
-    console.log(ar)
-    if (ar == 0) return res.cc('修改失败，无相关班级数据')
+    // let sql3 = sqlText.update('class')
+    // let [{ affectedRows: ar }] = await db.query(sql3, [req.body, req.body.id])
+    // console.log(ar)
+    // if (ar == 0) return res.cc('修改失败，无相关班级数据')
     res.cc('修改成功', 200)
   } catch (error) {
     console.log(error)
@@ -143,14 +163,14 @@ exports.updateClass = async (req, res) => {
 // tcID  T
 exports.cancelHeadmaster = async (req, res) => {
   // 置空教师信息下的班级ID
-  let sql = sqlText.update('teachers', 'where account=?')
-  let [{ affectedRows }] = await db.query(sql, [{ classID: null }, req.body.tcID])
+  let sql = sqlText.update('teacher_class_map', 'where class_id=? and teacher_id=?')
+  let [{ affectedRows }] = await db.query(sql, [{ is_master: 0 }, req.body.id, req.body.tcID])
   if (affectedRows == 0) return res.cc('修改失败，无相关教师账户数据')
 
   // 置空班级信息下的教师ID
-  let sql2 = sqlText.update('class')
-  let [{ affectedRows: ar }] = await db.query(sql2, [{ tcID: null }, req.body.id])
-  console.log(ar)
-  if (ar == 0) return res.cc('修改失败，无相关班级数据')
+  // let sql2 = sqlText.update('class')
+  // let [{ affectedRows: ar }] = await db.query(sql2, [{ tcID: null }, req.body.id])
+  // console.log(ar)
+  // if (ar == 0) return res.cc('修改失败，无相关班级数据')
   res.cc('修改成功', 200)
 }

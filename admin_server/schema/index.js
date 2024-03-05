@@ -12,7 +12,6 @@ const joi = require('joi')
 const name = joi.string().min(2).max(16).required()
 const adminAccount = joi.string().alphanum().min(6).max(6).required()
 const classID = joi.string().min(8).max(8).required()
-const tcID = classID
 const AccountId = joi.number().required()
 const password = joi.string().min(6).required()
 const schema = {
@@ -89,9 +88,9 @@ const schema = {
     alterClass: {
         body: {
             id: classID,
-            tcID,
+            tcID: joi.string().required(),
             originTcID: joi.string().min(8).max(8)
         }
     }
 }
-module.exports = schema
+module.exports = schema;

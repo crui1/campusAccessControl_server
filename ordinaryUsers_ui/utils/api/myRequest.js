@@ -1,7 +1,7 @@
 const app = getApp().globalData
 console.log(app);
 // const FlieBaseUrl = 'http://localhost:8088'
-const UserBaseUrl = 'http://192.168.43.24:8081'
+const UserBaseUrl = 'http://localhost:8081'
 
 export const uploadfile = (opt) => {
 	return new Promise((resolve, reject) => {
