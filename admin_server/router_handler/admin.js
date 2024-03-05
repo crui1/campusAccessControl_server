@@ -17,7 +17,7 @@ exports.get = (table) => {
             sql = sqlText.queryStudentAccounts(`where u.classID=${req.query.classID}`)
           }
           else if (req.query.classID == 0) {
-            sql = sqlText.queryTeacherAccounts(`where u.classID is null`)
+            sql = sqlText.queryStudentAccounts(`where u.classID is null`)
           }
         }
       }
