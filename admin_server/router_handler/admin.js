@@ -83,14 +83,42 @@ exports.add = (table) => {
 
 exports.delete = (table) => {
   return async (req, res) => {
-    try {
-      let sql = sqlText.delete(table)
-      const [{ affectedRows }] = await db.query(sql, req.body.id)
-      if (affectedRows == 0) return res.cc('删除失败，不存在相关数据')
-      res.cc('删除成功', 200)
-    } catch (error) {
-      console.log(error)
-      res.cc('服务器查询错误')
+    let sql = sqlText.delete(table, "where id=?")
+
+    if (table != "class") {
+      try {
+        const [{ affectedRows }] = await db.query(sql, req.body.id)
+        if (affectedRows == 0) return res.cc('删除失败，不存在相关数据')
+        res.cc('删除成功', 200)
+      } catch (error) {
+        console.log(error)
+        res.cc('服务器查询错误')
+      }
+    } else { // table == "class"
+      // 删除班级信息
+      let connection = await db.getConnection();
+      try {
+        // 开启事务
+        await connection.beginTransaction();
+        // 删除班级--s
+        const [rows, fields] = await connection.query(sql, req.body.id);
+        // 清除教师班级映射表的联系
+        await connection.query(
+          sqlText.delete('teacher_class_map', 'where class_id=?'),
+          [req.body.id]
+        );
+        // 更新学生表的与当前班级关联的
+        await connection.query(
+          sqlText.update('students', 'where classID=?'),
+          [{ classID: null }, req.body.id]
+        );
+        await connection.commit();
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      } finally {
+        connection.end();
+      }
     }
   }
 }

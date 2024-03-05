@@ -31,7 +31,7 @@ const admin = {
     LEFT JOIN class AS cl ON tcm.class_id = cl.id ${where}`,
   // 添加
   add: (table) => `insert into ${table} set ?`,
-  delete: (table) => `delete from ${table} where id=?`,
+  delete: (table, where = '') => `delete from ${table} ${where}`,
   update: (table, where = 'where id=?') => `update ${table} set ? ${where}`,
 }
 
