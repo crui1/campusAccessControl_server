@@ -40,7 +40,7 @@
         <el-table-column label="班级名" prop="name"></el-table-column>
         <el-table-column label="班主任">
           <template v-slot="{ row }">
-            <span class="mgr">{{ row.sname || "暂无" }}</span>
+            <span class="mgr">{{ row.tcName || "暂无" }}</span>
             <el-link
               v-if="row.tcID"
               @click="cancelTeacher(row.id, row.tcID)"
