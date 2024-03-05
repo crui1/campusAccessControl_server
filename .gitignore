@@ -1,5 +1,5 @@
 .DS_Store
-.gutignore
+.gitignore
 node_modules
 dist
 */.DS_Store
