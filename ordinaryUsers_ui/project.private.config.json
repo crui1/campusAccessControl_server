@@ -4,5 +4,6 @@
 	"setting": {
 		"compileHotReLoad": false
 	},
-	"libVersion": "2.27.3"
+	"libVersion": "2.27.3",
+	"condition": {}
 }

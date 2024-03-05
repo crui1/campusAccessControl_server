@@ -38,7 +38,7 @@ export const myRequest = (opt) => {
 			method: opt.method || 'GET',
 			url: UserBaseUrl + opt.url,
 			data: opt.data,
-			timeout: 5000,
+			timeout: 3500,
 			header: {
 				'content-type': 'application/x-www-form-urlencoded',
 				'Authorization': app.token

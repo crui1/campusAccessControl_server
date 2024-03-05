@@ -1,7 +1,8 @@
 // const app = getApp()
 // const api = require('../../utils/api/user')
 import { register, getClasses } from '../../utils/api/index'
-const md5 = require('md5')
+import {SUCCESSSTATE} from "../../constant/index"
+import {hex_md5 as md5} from "../../utils/md5/md5"
 Page({
 	data: {
 		account: '',
@@ -24,7 +25,7 @@ Page({
 	},
 	async _getClass() {
 		const res = await getClasses()
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			this.setData({
 				classInfo: res.data
 			})

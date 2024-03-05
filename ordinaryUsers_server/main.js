@@ -63,7 +63,7 @@ app.use((err, req, res, next) => {
     // 捕获 multer 上传文件错误
     if (err instanceof multer.MulterError) {
         // 发生错误
-        res.cc('上传文件失败', err.message)
+        return res.cc('上传文件失败', err.message)
     }
     // 未知错误
     res.cc('服务器未知错误', err)

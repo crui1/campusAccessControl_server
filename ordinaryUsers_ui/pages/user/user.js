@@ -1,8 +1,7 @@
 var app = getApp().globalData
-// const api = require('../../utils/api/user')
-// const staticApi = require('../../utils/api/static')
+import {SUCCESSSTATE} from "../../constant/index"
 import { getUserInfo, uploadFile, upEmail, upPassword, upHeadPortrait } from '../../utils/api/index'
-const md5 = require('md5')
+import {hex_md5 as md5} from "../../utils/md5/md5"
 Page({
 	data: {
 		show: false,
@@ -31,7 +30,7 @@ Page({
 	// 发送请求获取用户信息
 	async _getUserInfo() {
 		const res = await getUserInfo()
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			app.userInfo = res.data
 			this.setData({
 				userInfo: res.data
@@ -61,7 +60,7 @@ Page({
 		const res2 = await uploadFile({ name: 'pic', filePath: p })
 		if (res2.code != 200) return
 		const rest = await upHeadPortrait({ pic: res2.data.pic })
-		if (rest.code == 200) {
+		if (rest.code == SUCCESSSTATE) {
 			this._getUserInfo()
 			wx.showToast({
 				title: rest.message,
@@ -116,7 +115,7 @@ Page({
 		})
 		// 合法发起请求
 		const res2 = await upEmail({ email })
-		if (res2.code == 200) {
+		if (res2.code == SUCCESSSTATE) {
 			this.cancel()
 			// 刷新用户数据
 			this._getUserInfo()
@@ -151,7 +150,7 @@ Page({
 			newPwd: md5(this.data.newPwd.trim()),
 			rePassword: md5(this.data.reNewPwd.trim())
 		})
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			this.cancel()
 			wx.showToast({
 				title: res.message,

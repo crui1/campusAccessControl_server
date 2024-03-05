@@ -1,6 +1,7 @@
 const app = getApp().globalData
+import {SUCCESSSTATE} from "../../constant/index"
 import {login} from '../../utils/api/index'
-import md5 from 'md5'
+import {hex_md5 as md5} from '../../utils/md5/md5'
 Page({
 	data: {
 		username: '',
@@ -70,11 +71,12 @@ Page({
 				password: md5(this.data.password),
 				isTc: this.data.isTc
 			})
-			if (data.code == 200) {
+			if (data.code == SUCCESSSTATE) {
 				// 本地存token
 				wx.setStorageSync('token', data.token)
 				wx.setStorageSync('Type', this.data.isTc ? '1' : '0')
 				app.token = data.token
+				console.log("跳转")
 				wx.switchTab({
 					url: '../user/user'
 				})

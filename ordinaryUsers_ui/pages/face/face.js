@@ -1,4 +1,5 @@
 import { alterFacePic, getFaceInfo, postFacePic } from '../../utils/api/index'
+import {SUCCESSSTATE} from "../../constant/index"
 Page({
 	data: {
 		src: null,
@@ -27,9 +28,9 @@ Page({
 	async addFace() {
 		if (!this.data.src) return
 		const res = await postFacePic({ name: 'pic', filePath: this.data.src })
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			this.data.url = ''
-			this.setData({
+			this.setData({S
 				pz: false,
 				pzbox: true
 			})
@@ -51,7 +52,7 @@ Page({
 	async alterFaceInfo() {
 		if (!this.data.src) return
 		const res = await alterFacePic({ name: 'pic', filePath: this.data.src })
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			this.data.url = ''
 			this.setData({
 				pz: false,
@@ -74,7 +75,7 @@ Page({
 	// _查询人脸信息
 	async _getFaceInfo() {
 		const res = await getFaceInfo()
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			this.setData({
 				info: "已有人脸相关信息",
 				existence: true

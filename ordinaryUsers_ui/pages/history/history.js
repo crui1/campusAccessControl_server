@@ -1,4 +1,5 @@
 import { getApplication, cancelApp } from '../../utils/api/index'
+import {SUCCESSSTATE} from "../../constant/index"
 Page({
 	data: {
 		//   0:待审核 1:通过 2:不通过
@@ -19,7 +20,7 @@ Page({
 	},
 	async _getDate() {
 		const res = await getApplication()
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			this.setData({
 				listData: res.data
 			})
@@ -38,7 +39,7 @@ Page({
 		// 		'Authorization': app.token
 		// 	},
 		// 	success: ({ data: res }) => {
-		// 		if (res.code == 200) {
+		// 		if (res.code == SUCCESSSTATE) {
 		// 			this.setData({
 		// 				listData: res.data
 		// 			})
@@ -55,7 +56,7 @@ Page({
 	},
 	async cnacel({ currentTarget: { dataset: { id } } }) {
 		const res = await cancelApp({ id })
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			this._getDate()
 		}
 		wx.showToast({

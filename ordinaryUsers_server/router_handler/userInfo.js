@@ -9,14 +9,14 @@ const { SUCCESSSTATE } = require("../constant")
 // 参数 无
 exports.getUserinfo = (req, res) => {
   // 判断是教师还是学生
-  console.log(req.user)
-  let sql = sqlText.sql.getInfo('students', 'where u.id=?')
+  console.log("getUserinfo", req.user)
+  let sql = sqlText.sql.getStuInfo()
   if (req.user.isTc) {
-    sql = sqlText.sql.getInfo('teachers', 'where u.id=?')
+    sql = sqlText.sql.getTcInfo()
   }
   // 注意：为了防止用户的密码泄露，需要排除 password 字段
   // 注意：req 对象上的 user 属性，是 Token 解析成功，express-jwt 中间件帮我们挂载上去的
-  db.query(sql, req.user.id, (err, results) => {
+  db.query(sql, [req.user.id], (err, results) => {
     // 1. 执行 SQL 语句失败
     if (err) return res.cc(err)
 

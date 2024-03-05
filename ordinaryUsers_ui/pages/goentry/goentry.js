@@ -1,4 +1,5 @@
 const app = getApp().globalData
+import {SUCCESSSTATE} from "../../constant/index"
 import { postApplication } from '../../utils/api/index'
 Page({
 	data: {
@@ -72,7 +73,7 @@ Page({
 			time: this.data.times * 2,
 			reason: this.data.reason,
 		})
-		if (res.code == 200) {
+		if (res.code == SUCCESSSTATE) {
 			wx.showToast({
 				title: res.message,
 				icon: 'success',

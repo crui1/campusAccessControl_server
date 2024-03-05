@@ -27,7 +27,7 @@ const schema = {
         body: {
             account,
             password: password,
-            isTc: joi.boolean().required()
+            // isTc: joi.boolean().required()
         }
     },
     up_email: {

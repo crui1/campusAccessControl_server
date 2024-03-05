@@ -65,16 +65,18 @@ exports.register = (req, res) => {
 //     名称         是否必填
 // 1. account       T
 // 2. password      T
-// 3. isTc          T                 
+
 exports.login = (req, res) => {
     let userInfo = req.body
-    let sql = sqlText.sql.reg_login('students')
-    if (userInfo.isTc) sql = sqlText.sql.reg_login('teachers')
-    db.query(sql, userInfo.account, (err, result) => {
+    // 教师账号8位，学生10位
+    userInfo.isTc = req.body.account.length === 8
+    let sql = sqlText.sql.login('students')
+    if (userInfo.isTc) sql = sqlText.sql.login('teachers')
+    db.query(sql, [userInfo.account], (err, result) => {
         // 执行 SQL 语句失败
         if (err) return res.cc(err)
         // 执行 SQL 语句成功，但是查询到数据条数不等于 1
-        if (result.length !== 1) return res.cc('用户不存在！')
+        if (result.length !== 1) return res.cc('账号错误！')
         // 判断用户输入的登录密码是否和数据库中的密码一致
         if (!bcrypt.compareSync(userInfo.password, result[0].password)) {
             return res.cc('密码错误！')

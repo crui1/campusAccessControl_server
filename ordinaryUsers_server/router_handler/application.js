@@ -17,12 +17,17 @@ exports.alterApp = (req, res) => {
     res.cc('审核成功', SUCCESSSTATE)
   })
 }
-// 申请信息查询
+// 教师 查询申请信息
 // state F 审核状态码
 exports.tcGetApp = (req, res) => {
+  if (req.query.is_master == "0") return res.send({
+    message: '没有相关权限',
+    code: 403
+  })
   let sql = sqlText.sql.getApp('where classID=?')
+  console.log(`GET APP SQL --> ${req.query.state} -- ${JSON.stringify(req.query)}`)
   if (req.query.state) sql = sqlText.sql.getApp('where classID=? AND state=?')
-  db.query(sql, [req.user.classID, req.query.state], (err, result) => {
+  db.query(sql, [req.query.class_id, req.query.state], (err, result) => {
     if (err) return res.cc(err)
     res.send({
       message: '获取数据成功',
