@@ -13,11 +13,11 @@ const admin = {
         c.id,
         c.name,
         tcm.teacher_id AS tcID,
-        teachers.name AS sname
+        teachers.name AS tcName
     FROM
         class AS c
     LEFT JOIN teacher_class_map AS tcm ON c.id = tcm.class_id AND tcm.is_master = 1
-    LEFT JOIN teachers ON tcm.teacher_id = teachers.id ${where}`,
+    LEFT JOIN teachers ON tcm.teacher_id = teachers.account ${where}`,
   queryStudentAccounts: (where = '') => `SELECT u.id,u.account,u.name,c.name as cname  FROM students as u left join class as c on u.classID=c.id ${where}`,
   queryTeacherAccounts: (where = '') => `
     SELECT
