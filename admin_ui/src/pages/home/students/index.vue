@@ -52,7 +52,7 @@
             <DropDown
               title="修改所属班级"
               :selection="classes.filter((it) => it.id != row.classID)"
-              :infoID="row.id"
+              :dataId="row.id"
               icon="el-icon-s-home"
               @choose="alterStudent"
             />
@@ -88,7 +88,10 @@ export default {
       this.$store.dispatch("getClasses")
     }
     // 订阅 reGetStudent 消息
-    this.$bus.$on('reGetStudent', () => this.classID = '-1')
+    this.$bus.$on('reGetStudent', () => {
+      this.classID = '-1'
+      this.getData()
+    })
   },
   data() {
     return {
@@ -144,8 +147,8 @@ export default {
         this.$message.error(res.message)
       }
     },
-    async alterStudent(options) {
-      let data = { id: options.infoID, classID: options.chooseID }
+    async alterStudent({ dataId, chooseID }) {
+      let data = { id: dataId, classID: chooseID }
       const res = await api.alertStudent(data).catch(() => { })
       if (res.code == 200) {
         this.$message.success("修改成功")

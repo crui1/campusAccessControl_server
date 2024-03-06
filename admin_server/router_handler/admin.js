@@ -85,44 +85,86 @@ exports.delete = (table) => {
   return async (req, res) => {
     let sql = sqlText.delete(table, "where id=?")
 
-    if (table != "class") {
+    if (table == "teachers") {
+      // if (req.body.classID) {
+      //   // 没有关联班级
+      //   try {
+      //     const [{ affectedRows }] = await db.query(sql, req.body.id)
+      //     if (affectedRows == 0) return res.cc('删除账号失败')
+      //     res.cc('删除账号成功', 200)
+      //   } catch (error) {
+      //     console.log(error)
+      //     res.cc('服务器查询错误')
+      //   }
+      // } else {
+      // 有关联班级,使用事务，两张表
+      // 删除班级信息
+      console.log("有关联班级,使用事务，两张表")
+      let connection = await db.getConnection();
       try {
-        const [{ affectedRows }] = await db.query(sql, req.body.id)
-        if (affectedRows == 0) return res.cc('删除失败，不存在相关数据')
+        // 开启事务
+        await connection.beginTransaction();
+        // 删除教师账户
+        await connection.query(sql, req.body.id);
+        // 删除班级教师映射记录
+        console.log("教师ID " + JSON.stringify(req.body))
+        await connection.query(
+          sqlText.delete('teacher_class_map', 'where teacher_id=?'),
+          req.body.account
+        );
+        await connection.commit();
         res.cc('删除成功', 200)
       } catch (error) {
+        await connection.rollback();
         console.log(error)
-        res.cc('服务器查询错误')
+        res.cc('删除失败')
+      } finally {
+        connection.release();
       }
-    } else { // table == "class"
+      // }
+
+    } else if (table == "class") { // table == "class"
+      // 使用事务
       // 删除班级信息
       let connection = await db.getConnection();
       try {
         // 开启事务
         await connection.beginTransaction();
         // 删除班级--s
-        const [rows, fields] = await connection.query(sql, req.body.id);
-        // 清除教师班级映射表的联系
+        await connection.query(sql, req.body.id);
+        // 删除所有与该班级有映射联系的记录
         await connection.query(
           sqlText.delete('teacher_class_map', 'where class_id=?'),
           [req.body.id]
         );
-        // 更新学生表的与当前班级关联的
+        // 更新学生表的与当前班级关联的班级id
         await connection.query(
           sqlText.update('students', 'where classID=?'),
           [{ classID: null }, req.body.id]
         );
         await connection.commit();
+        res.cc('删除成功', 200)
       } catch (error) {
         await connection.rollback();
-        throw error;
+        res.cc('删除失败')
       } finally {
-        connection.end();
+        connection.release();
+      }
+    } else {
+      // 删除学生账号
+      try {
+        const [{ affectedRows }] = await db.query(sql, req.body.id)
+        if (affectedRows == 0) return res.cc('删除账号失败')
+        res.cc('删除账号成功', 200)
+      } catch (error) {
+        console.log(error)
+        res.cc('服务器查询错误')
       }
     }
   }
 }
 
+// 普通信息更新
 exports.update = (table) => {
   return async (req, res) => {
     try {
@@ -142,63 +184,78 @@ exports.update = (table) => {
 // tcID 新班主任 工号 T
 // originalTcID 原班主任工号 F
 exports.updateClassMasterTeacher = async (req, res) => {
-  // 如果原来有班主任 
-  // 先清空原班主任账户的班级号 
-  // 再设置新班主任工号的班级id
   try {
     if (req.body.originTcID) {
-      // 清空原班主任管理is_master
-      let sql = sqlText.update('teacher_class_map', 'where teacher_id=? and class_id=?')
-      let [{ affectedRows }] = await db.query(sql, [{ is_master: 0 }, req.body.originTcID, req.body.id])
-      if (affectedRows == 0) return res.cc('修改失败，无相关教师账户数据')
-      delete req.body.originTcID
+      // 如果原来有班主任 
+      // 先删除原班主任与班级的关联信息 
+      // 再添加新班主任与班级的关联信息
+      // 多表操作 使用事务
+      let connection = await db.getConnection();
+      try {
+        // 开启事务
+        await connection.beginTransaction();
+        // teacher_class_map删除原班主任信息记录
+        await db.query(
+          sqlText.delete('teacher_class_map', 'where teacher_id=? and class_id=?'),
+          [req.body.originTcID, req.body.id]
+        )
+        delete req.body.originTcID
 
-      // 设置 teacher_class_map 新班主任 is_master
-      let up2 = sqlText.update('teacher_class_map', 'where teacher_id=? and class_id=?')
-      let [{ affectedRows: ars }] = await db.query(up2, [{ is_master: 1 }, req.body.tcID, , req.body.id])
-      if (ars == 0) return res.cc('修改失败，无相关教师账户数据')
-      console.log(ars)
-    }
-    const [rows] = await db.query(sqlText.queryTeacherClassMap("where teacher_id=? and class_id=?"), [req.body.tcID, , req.body.id])
-    if (rows.length > 0) {
-      // 设置 teacher_class_map 新班主任 is_master
-      let up2 = sqlText.update('teacher_class_map', 'where teacher_id=? and class_id=?')
-      let [{ affectedRows: ars }] = await db.query(up2, [{ is_master: 1 }, req.body.tcID, , req.body.id])
-      if (ars == 0) return res.cc('修改失败！')
-      console.log(ars)
+        // teacher_class_map 添加新班主任记录
+        await db.query(
+          sqlText.add('teacher_class_map'),
+          [{ is_master: 1, teacher_id: req.body.tcID, class_id: req.body.id }])
+        await connection.commit();
+        res.cc('成功修改班主任', 200)
+      } catch (error) {
+        // 回滚
+        await connection.rollback();
+        res.cc('修改班主任失败')
+      } finally {
+        // 释放连接
+        connection.release();
+      }
     } else {
-      console.log("添加map")
-      let insertSql = sqlText.add("teacher_class_map")
-      const [{ affectedRows }] = await db.query(insertSql, [{ class_id: req.body.id, teacher_id: req.body.tcID, is_master: 1 }])
-      if (affectedRows != 1) return res.cc('添加失败!2')
+      // 先查询之前是否属于这个班级，
+      // 有记录直接修改 is_master
+      // 没有记录直接添加一条记录
+      const [rows] = await db.query(
+        sqlText.queryTeacherClassMap("where teacher_id=? and class_id=?"),
+        [req.body.tcID, req.body.id])
+      if (rows.length > 0) {
+        // 设置 teacher_class_map 新班主任 is_master
+        console.log(JSON.stringify(rows))
+        // TODO: 查询有问题
+        let [{ affectedRows }] = await db.query(
+          sqlText.update('teacher_class_map', 'WHERE class_id=? AND teacher_id=?'),
+          [{ is_master: 1 }, req.body.id, req.body.tcID])
+        console.log(affectedRows)
+
+        if (affectedRows == 0) return res.cc('设置班主任失败！')
+      } else {
+        console.log("直接添加map记录")
+        const [{ affectedRows }] = await db.query(
+          sqlText.add("teacher_class_map"),
+          [{ class_id: req.body.id, teacher_id: req.body.tcID, is_master: 1 }])
+        if (affectedRows != 1) return res.cc('设置班主任失败！')
+      }
+      res.cc('设置班主任成功！', 200)
     }
-    // 设置当前班级新班主任
-    // let sql3 = sqlText.update('class')
-    // let [{ affectedRows: ar }] = await db.query(sql3, [req.body, req.body.id])
-    // console.log(ar)
-    // if (ar == 0) return res.cc('修改失败，无相关班级数据')
-    res.cc('修改成功', 200)
   } catch (error) {
     console.log(error)
     if (error.errno == 1054) return res.cc('提交参数错误')
-    res.cc('服务器查询错误')
+    res.cc('服务器sql查询错误')
   }
 }
 
 // 取消现班级有班主任
 // 参数
-// id T 
-// tcID  T
+// id T  班级号
+// tcID  T 教师工号
 exports.cancelHeadmaster = async (req, res) => {
-  // 置空教师信息下的班级ID
-  let sql = sqlText.update('teacher_class_map', 'where class_id=? and teacher_id=?')
-  let [{ affectedRows }] = await db.query(sql, [{ is_master: 0 }, req.body.id, req.body.tcID])
-  if (affectedRows == 0) return res.cc('修改失败，无相关教师账户数据')
-
-  // 置空班级信息下的教师ID
-  // let sql2 = sqlText.update('class')
-  // let [{ affectedRows: ar }] = await db.query(sql2, [{ tcID: null }, req.body.id])
-  // console.log(ar)
-  // if (ar == 0) return res.cc('修改失败，无相关班级数据')
-  res.cc('修改成功', 200)
+  // 置teacher_class_map记录的is_master = 0 删除记录
+  let sql = sqlText.delete('teacher_class_map', 'where class_id=? and teacher_id=?')
+  let [{ affectedRows }] = await db.query(sql, [req.body.id, req.body.tcID])
+  if (affectedRows == 0) return res.cc('撤销班主任失败')
+  res.cc('撤销班主成功', 200)
 }

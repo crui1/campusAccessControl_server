@@ -27,7 +27,7 @@
       >
         <el-table-column label="姓名" prop="name"></el-table-column>
         <el-table-column label="工号/账号" prop="account"></el-table-column>
-        <el-table-column label="管理班级" prop="cname">
+        <el-table-column label="管理/所属班级" prop="cname">
           <template v-slot="{ row }">
             <span>{{ row.cname || "暂无" }}</span>
           </template>
@@ -36,7 +36,7 @@
           <template v-slot="{ row }">
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="delTeacher(row.id, row.classID)"
+              @confirm="delTeacher(row.id, row.account)"
             >
               <el-link type="danger" slot="reference">删除教师账号</el-link>
             </el-popconfirm>
@@ -110,12 +110,13 @@ export default {
         this.$message.error(res.message)
       }
     },
-    async delTeacher(id, classID) {
-      const res = await api.deleteTeacher({ id, classID }).catch(() => { })
+    async delTeacher(id, account) {
+      const res = await api.deleteTeacher({ id, account }).catch(() => { })
       if (res.code == 200) {
         this.$message.success("删除成功")
-        if (classID) this.getData()
-        else this.$store.dispatch('getTeachers')
+        // if (classID) this.getData()
+        // else this.$store.dispatch('getTeachers')
+        this.$store.dispatch('getTeachers')
       } else {
         console.log(res);
         this.$message.error(res.message)

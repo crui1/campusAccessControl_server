@@ -27,6 +27,7 @@ app.use(history())
 
 // 注册 解析application/x-www-form-urlencoded格式的表单数据的中间件 post方法的
 app.use(express.urlencoded({ extended: false }))
+
 app.use((req, res, next) => {
     console.log(req.body);
     console.log(req.query);

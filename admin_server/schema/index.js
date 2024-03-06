@@ -66,7 +66,8 @@ const schema = {
     deleteAccount: {
         body: {
             id: AccountId,
-            classID: joi.string().min(8).max(8)
+            classID: joi.string().min(8).max(8),
+            account: joi.string().min(8).max(8)
         }
     },
     alterAccount: {

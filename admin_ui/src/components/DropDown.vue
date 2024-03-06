@@ -36,7 +36,7 @@ export default {
         return []
       }
     },
-    infoID: {
+    dataId: {
       typeof: 'String',
       default: ''
     },
@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     handleCommand(command) {
-      this.$emit("choose", { infoID: this.infoID, chooseID: command, additionalID: this.additionalID || undefined })
+      this.$emit("choose", { dataId: this.dataId, chooseID: command, additionalID: this.additionalID || undefined })
     }
   }
 }

@@ -13,7 +13,8 @@ const admin = {
         c.id,
         c.name,
         tcm.teacher_id AS tcID,
-        teachers.name AS tcName
+        teachers.name AS tcName,
+        tcm.is_master
     FROM
         class AS c
     LEFT JOIN teacher_class_map AS tcm ON c.id = tcm.class_id AND tcm.is_master = 1
@@ -24,10 +25,12 @@ const admin = {
         u.id,
         u.account,
         u.name,
-        cl.name AS cname 
+        tcm.class_id AS classID,
+        cl.name AS cname,
+        is_master
     FROM
         teachers AS u
-    LEFT JOIN teacher_class_map AS tcm ON u.id = tcm.teacher_id AND tcm.is_master = 1
+    LEFT JOIN teacher_class_map AS tcm ON u.account = tcm.teacher_id
     LEFT JOIN class AS cl ON tcm.class_id = cl.id ${where}`,
   // 添加
   add: (table) => `insert into ${table} set ?`,

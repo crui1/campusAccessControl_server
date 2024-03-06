@@ -40,7 +40,7 @@
         <el-table-column label="班级名" prop="name"></el-table-column>
         <el-table-column label="班主任">
           <template v-slot="{ row }">
-            <span class="mgr">{{ row.tcName || "暂无" }}</span>
+            <span class="mgr">{{ row.is_master ? row.tcName : "暂无" }}</span>
             <el-link
               v-if="row.tcID"
               @click="cancelTeacher(row.id, row.tcID)"
@@ -63,7 +63,7 @@
               title="设置班主任"
               :selection="teachers"
               :additionalID="row.tcID"
-              :infoID="row.id"
+              :dataId="row.id"
               @choose="alterHeadmaster"
             />
           </template>
@@ -188,8 +188,8 @@ export default {
     changeShowDialog() {
       this.showDialog = !this.showDialog
     },
-    async alterHeadmaster({ infoID, chooseID, additionalID }) {
-      let data = { id: infoID, tcID: chooseID, originTcID: additionalID }
+    async alterHeadmaster({ dataId, chooseID, additionalID }) {
+      let data = { id: dataId, tcID: chooseID, originTcID: additionalID }
       const res = await api.alterClass(data).catch(() => { })
       if (res.code == 200) {
         this.$message.success("修改成功")
@@ -243,7 +243,7 @@ export default {
   computed: {
     teachers: function () {
       return this.$store.state.teachers.filter(item => {
-        return !item.classID
+        return !item.is_master
       })
     },
     classes: function () {
