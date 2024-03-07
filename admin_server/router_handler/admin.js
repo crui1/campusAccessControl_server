@@ -42,36 +42,56 @@ exports.get = (table) => {
   }
 }
 
+async function addSqlAffair(table, data, send) {
+  // 有附加信息时
+  // 班级表 || 教师表 之间有个映射表
+  // 使用事务
+  let class_id = data.classID || data.id
+  let teacher_id = data.tcID || data.account
+  console.log(class_id + "----" + teacher_id)
+  // 删除多余的信息
+  data.classID && delete data.classID
+  data.tcID && delete data.tcID
+  let conn = await db.getConnection();
+  try {  // 开启事务
+    await conn.beginTransaction();
+    // 添加基本信息
+    await conn.query(sqlText.add(table), data)
+    console.log("66666666")
+    // 添加映射信息, 同时传入这两个才执行这个任务
+    if (class_id && teacher_id) await conn.query(sqlText.add("teacher_class_map"), [{ is_master: 1, teacher_id, class_id }]);
+
+    await conn.commit()
+    send("添加成功", 200)
+  } catch (e) {
+    console.log(e)
+    conn.rollback()
+    send("添加失败")
+  } finally {
+    conn.release()
+  }
+}
+
 exports.add = (table) => {
   return async (req, res) => {
     try {
       // 添加账号 先加密 密码
-      if (table !== 'class') {
+      if (table != 'class') {
         // 加密密码 注册账户
         req.body.password = bcrypt.hashSync(req.body.password, 10)
         delete req.body.checkPass
       }
-      // 先添加信息
-      let sql = sqlText.add(table)
-      const [{ affectedRows }] = await db.query(sql, req.body)
-      if (affectedRows != 1) return res.cc('添加失败!')
-
-      // 添加教师 传了班级信息
-      if (req.body.classID && req.body.account.length == 8) {
-        // 同时设置班级表的班主任
-        let sql = sqlText.update('class')
-        const [{ affectedRows: ar }] = await db.query(sql, [{ tcID: req.body.account }, req.body.classID])
-        if (ar !== 1) return res.cc('设置班主任失败(1)!')
+      // 学生表是直接添加外键，其他表是有map表,没有穿额外信息
+      // 先添加基本表信息
+      if (table == "students") {
+        let sql = sqlText.add(table)
+        const [{ affectedRows }] = await db.query(sql, req.body)
+        if (affectedRows != 1) return res.cc('添加失败!')
+        return res.cc("添加成功", 200)
+      } else {
+        console.log("添加事务")
+        await addSqlAffair(table, req.body, res.cc)
       }
-
-      //添加班级 同时设置教师
-      if (req.body.tcID) {
-        let sql = sqlText.update('teachers', 'where account=?')
-        const [{ affectedRows: ar }] = await db.query(sql, [{ classID: req.body.id }, req.body.tcID])
-        console.log(ar)
-        if (ar !== 1) return res.cc('设置班主任失败(2)!')
-      }
-      res.cc('添加成功', 200)
     } catch (error) {
       console.log(error);
       if (error.errno == 1062) return res.cc('已存在，请勿重复添加')
@@ -86,19 +106,6 @@ exports.delete = (table) => {
     let sql = sqlText.delete(table, "where id=?")
 
     if (table == "teachers") {
-      // if (req.body.classID) {
-      //   // 没有关联班级
-      //   try {
-      //     const [{ affectedRows }] = await db.query(sql, req.body.id)
-      //     if (affectedRows == 0) return res.cc('删除账号失败')
-      //     res.cc('删除账号成功', 200)
-      //   } catch (error) {
-      //     console.log(error)
-      //     res.cc('服务器查询错误')
-      //   }
-      // } else {
-      // 有关联班级,使用事务，两张表
-      // 删除班级信息
       console.log("有关联班级,使用事务，两张表")
       let connection = await db.getConnection();
       try {

@@ -36,7 +36,7 @@
           <template v-slot="{ row }">
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="delTeacher(row.id, row.account)"
+              @confirm="delTeacher(row.id, row.account, row.classID)"
             >
               <el-link type="danger" slot="reference">删除教师账号</el-link>
             </el-popconfirm>
@@ -110,13 +110,14 @@ export default {
         this.$message.error(res.message)
       }
     },
-    async delTeacher(id, account) {
+    async delTeacher(id, account, flag) {
       const res = await api.deleteTeacher({ id, account }).catch(() => { })
       if (res.code == 200) {
         this.$message.success("删除成功")
         // if (classID) this.getData()
         // else this.$store.dispatch('getTeachers')
         this.$store.dispatch('getTeachers')
+        flag && this.$store.dispatch('getClasses')
       } else {
         console.log(res);
         this.$message.error(res.message)

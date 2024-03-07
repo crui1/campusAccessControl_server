@@ -1,6 +1,7 @@
 // 导入定义验证规则的包
 const joi = require('joi')
 /**
+ * 该插件会自动过滤掉前端传来的 没有定义的参数字段
  * string() 值必须是字符串
  * alphanum() 值只能是包含 a-zA-Z0-9 的字符串
  * min(length) 最小长度
@@ -21,6 +22,7 @@ const schema = {
             account: adminAccount,
             password: password,
             checkPass: joi.ref('password'),
+            email: joi.string().email(),
             registrationCode: joi.string().required()
         }
     },
