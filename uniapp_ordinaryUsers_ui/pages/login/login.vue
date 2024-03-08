@@ -5,9 +5,6 @@
 			<image class="login-img" :src="require('../../static/login/pp.jpg')"></image>
 		</view>
 		<view class="login-from">
-			<!-- 账户类型选择器 -->
-			<!-- <my-selector title="账户类型：" placeholder="选择登录账户类型" @handleChange="typeChange" class="selector"></my-selector> -->
-
 			<!--账号-->
 			<view class="inputView">
 				<image class="nameImage" :src="require('../../static/login/name.png')"></image>
@@ -44,7 +41,8 @@
 		SUCCESSSTATE
 	} from "../../constant/index.js"
 	import {
-		login
+		login,
+		getUserInfo
 	} from "../../request/index.js"
 	export default {
 		data() {
@@ -55,11 +53,11 @@
 		},
 		onLoad() {
 			// 生命周期函数--监听页面显示
-			if (gld.token) {
-				uni.switchTab({
-					url: '/pages/user/user',
-				})
-			}
+			// if (gld.token) {
+			// 	uni.switchTab({
+			// 		url: '/pages/user/user',
+			// 	})
+			// }
 		},
 		methods: {
 			register() {
@@ -92,16 +90,27 @@
 					if (data.code == SUCCESSSTATE) {
 						// 本地存token
 						uni.setStorageSync('token', data.token)
-						uni.setStorageSync('Type', this.isTc ? '1' : '0')
-						gld.token = data.token
-						uni.switchTab({
-							url: '../user/user'
-						})
 						uni.showToast({
 							title: '登录成功',
 							icon: 'success',
 							duration: 2000
 						})
+						// uni.setStorageSync('Type', this.isTc ? '1' : '0')
+						// gld.token = data.token
+						this.getUserINF()
+						// if (res.code == SUCCESSSTATE) {
+						// 	uni.showToast({
+						// 		title: '登录成功',
+						// 		icon: 'success',
+						// 		duration: 2000
+						// 	})
+						// 	uni.switchTab({
+						// 		url: '../user/user'
+						// 	})
+
+						// }
+
+
 					} else {
 						uni.showToast({
 							title: data.message,
@@ -109,6 +118,19 @@
 							duration: 1500
 						})
 					}
+				}
+			},
+			// 获取信息
+			async getUserINF() {
+				console.log("login getData");
+				const res = await getUserInfo()
+				console.log("----///", res);
+				if (res.code == SUCCESSSTATE) {
+					gld.userInfo = res.data
+					console.log("App getData", res.data);
+					uni.switchTab({
+						url: '/pages/user/user',
+					})
 				}
 			}
 		}

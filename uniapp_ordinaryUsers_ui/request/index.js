@@ -14,9 +14,12 @@ export const register = data => myRequest({
 export const getClasses = () => myRequest({
 	url: '/api/getclasses'
 })
-export const getUserInfo = () => myRequest({
-	url: '/my/getuserinfo'
-})
+export const getUserInfo = () => {
+	console.log("6666666666666666")
+	return myRequest({
+		url: '/my/getuserinfo'
+	})
+}
 export const getFaceInfo = () => myRequest({
 	url: '/my/getfaceinfo'
 })

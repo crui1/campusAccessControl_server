@@ -1,4 +1,4 @@
-const gld = getApp().globalData
+// const gld = getApp().globalData
 import {
 	INVALID
 } from "../constant/index.js"
@@ -10,6 +10,7 @@ export const myRequest = ({
 	timeout
 }) => {
 	const BASEURL = 'http://localhost:8081'
+	// console.log("sdsds")
 	return new Promise((resolve, reject) => {
 		uni.showLoading({
 			title: '加载中',
@@ -22,7 +23,7 @@ export const myRequest = ({
 			timeout: timeout || 2500,
 			header: header || {
 				'content-type': 'application/x-www-form-urlencoded',
-				'Authorization': gld.token
+				'Authorization': uni.getStorageSync("token")
 			},
 			success: ({
 				data
@@ -47,6 +48,7 @@ export const myRequest = ({
 				resolve(data)
 			},
 			fail: (err) => {
+				console.log("5555555555555555")
 				uni.showToast({
 					title: '网络错误',
 					icon: 'error',
@@ -55,6 +57,7 @@ export const myRequest = ({
 				reject(err)
 			},
 			complete: (res) => {
+				console.log("777777")
 				uni.hideLoading()
 			}
 		})

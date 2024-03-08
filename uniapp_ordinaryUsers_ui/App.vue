@@ -1,21 +1,40 @@
 <script>
+	import {
+		getUserInfo
+	} from "./request/index.js"
+	import {
+		SUCCESSSTATE
+	} from "./constant/index.js"
 	export default {
 		globalData: {
-			userInfo: null,
-			token: ""
+			userInfo: null
 		},
 		onLaunch: function () {
-			let token = uni.getStorageSync("token")
-			console.log(this.globalData);
-			if (token != "") {
-				this.globalData.token = token
-			}
+			console.log('App onLaunch')
+			this.initApp()
 		},
 		onShow: function () {
 			console.log('App Show')
 		},
 		onHide: function () {
 			console.log('App Hide')
+		},
+
+		methods: {
+			async initApp() {
+				let token = uni.getStorageSync("token")
+				if (token != '') {
+					const res = await getUserInfo()
+					console.log("----///", res);
+					if (res.code == SUCCESSSTATE) {
+						this.globalData.userInfo = res.data
+						uni.switchTab({
+							url: '/pages/user/user',
+						})
+					}
+
+				}
+			}
 		}
 	}
 </script>
@@ -23,7 +42,11 @@
 <style lang="less">
 	/*每个页面公共css */
 	:root {
-		font-size: 10px; //37.5rem --> 375
+		font-size: 15px; //37.5rem --> 375
+	}
+
+	button {
+		margin: 0;
 	}
 
 	.content {

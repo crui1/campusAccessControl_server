@@ -63,11 +63,11 @@
 		toExamineApp
 	} from "../../request/index.js"
 	import {
-		SUCCESSCODE,
-		FAILCODE,
+		SUCCESSSTATE,
+		ERRORSTATE,
 		APPROVED,
 		REFUSER
-	} from "../../constants"
+	} from "../../constant/index.js"
 	export default {
 		data() {
 			return {
@@ -80,30 +80,23 @@
 		},
 		onLoad() {
 			// 加载时，只有一次
-			console.log("list", this.listData)
+			this.getData()
 		},
-		created() {
-			console.log("onCreated")
-			if (gld.userInfo.isTc && gld.userInfo.is_master) {
-				// 是班主任
-				this.initData({
-					class_id: gld.userInfo.class_id,
-					is_master: gld.userInfo.is_master
-				})
-			} else if (!gld.userInfo.isTc) {
-				// 是学生
-				this.initData()
-			} else {
-				uni.showToast({
-					title: "没有相关权限",
-					icon: "error"
-				})
-			}
-
+		onShow() {
+			this.getData()
 		},
 
-		mounted() {
-			console.log("mounted", this.listData);
+		onPullDownRefresh() {
+			console.log("Refresh")
+
+			setTimeout(function () {
+				console.log(525121245565)
+				uni.stopPullDownRefresh();
+			}, 600);
+
+			this.getData()
+
+
 		},
 
 		updated() {
@@ -111,10 +104,29 @@
 		},
 		methods: {
 			// 获取申请记录数据
+			getData() {
+				console.log(gld.userInfo, "562666545");
+				if (gld.userInfo.isTc && gld.userInfo.is_master) {
+					// 是班主任
+					this.initData({
+						class_id: gld.userInfo.class_id,
+						is_master: gld.userInfo.is_master
+					})
+				} else if (!gld.userInfo.isTc) {
+					// 是学生
+					this.initData()
+				} else {
+					uni.showToast({
+						title: "没有相关权限",
+						icon: "error"
+					})
+				}
+			},
 			async initData(data = null) {
 				let res = await getApplication(data)
-				console.log(res.data);
-				if (res.code == SUCCESSCODE) {
+				console.log("-------", res);
+				if (res.code == SUCCESSSTATE) {
+					console.log("++++++", res.data);
 					this.listData = res.data
 				} else {
 					uni.showToast({
@@ -131,7 +143,7 @@
 				const res = await cancelApp({
 					id
 				})
-				if (res.code == SUCCESSCODE) {
+				if (res.code == SUCCESSSTATE) {
 					this.initData()
 				}
 				uni.showToast({
@@ -156,7 +168,7 @@
 			// 教师提交审核
 			async postToExamine(data) {
 				const res = await toExamineApp(data)
-				if (res.code == SUCCESSCODE) {
+				if (res.code == SUCCESSSTATE) {
 					this.tcRemark = ""
 					this.initData({
 						class_id: gld.userInfo.class_id,

@@ -16,6 +16,7 @@ exports.getUserinfo = (req, res) => {
   }
   // 注意：为了防止用户的密码泄露，需要排除 password 字段
   // 注意：req 对象上的 user 属性，是 Token 解析成功，express-jwt 中间件帮我们挂载上去的
+  console.log("55----", sql)
   db.query(sql, [req.user.id], (err, results) => {
     // 1. 执行 SQL 语句失败
     if (err) return res.cc(err)

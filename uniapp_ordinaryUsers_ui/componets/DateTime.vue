@@ -85,7 +85,7 @@
 		},
 		computed: {
 			days() {
-				console.log("计算")
+				// console.log("计算")
 				let num = new Date(this.year, this.month, 0).getDate()
 				let days = []
 				for (var i = 1; i <= num; i++) {

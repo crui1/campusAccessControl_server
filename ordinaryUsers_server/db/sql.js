@@ -6,7 +6,7 @@ const sql = {
     left join class AS c on u.classID=c.id WHERE u.id=?`,
   getTcInfo: () => `
     SELECT u.id,u.email,u.name,u.pic,tcm.is_master,tcm.class_id,class.name AS class FROM teachers AS u 
-    LEFT JOIN teacher_class_map AS tcm on u.id=tcm.teacher_id
+    LEFT JOIN teacher_class_map AS tcm on u.account=tcm.teacher_id
     LEFT JOIN class ON class.id = class_id	WHERE u.id=?`,
   selPwd: (table) => `select password from ${table} WHERE id=?`,
   update: (table) => `update ${table} set ? where id=?`,

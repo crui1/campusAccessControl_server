@@ -54,7 +54,7 @@
 	import {
 		SUCCESSCODE,
 		FAILCODE
-	} from "../../constants/index.js"
+	} from "../../constant/index.js"
 	import {
 		getClasses
 	} from "../../request/index.js"

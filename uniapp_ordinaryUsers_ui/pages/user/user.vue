@@ -32,47 +32,59 @@
 			<image class="icon-goRight" :src="require('../../static/myUser/goRight.png')"></image>
 		</view>
 		<!-- 邮箱信息 -->
-		<view @click="businessInfo" class="my-block bord10">
+		<view @click="showEmailModal=!showEmailModal" class="my-block bord10">
 			<image class="icon-help" :src="require('../../static/myUser/help.png')"></image>
 			我的邮箱： {{userInfo.email||'未设置邮箱'}}
 			<image class="icon-goRight" :src="require('../../static/myUser/goRight.png')"></image>
 			<text class="tip">点击修改</text>
 		</view>
 		<!-- 修改密码按钮 -->
-		<view @click="showPwdCmp" class="my-block bord10">
+		<view @click="showPwdModal=!showPwdModal" class="my-block bord10">
 			<image class="icon-w48" :src="require('../../static/myUser/buiness.png')"></image>
 			修改密码
 			<image class="icon-goRight" :src="require('../../static/myUser/goRight.png')"></image>
 		</view>
 		<!-- 退出登录按钮 -->
-		<view @click="logoff" class="my-block">
+		<view @click="logout" class="my-block">
 			<image class="icon-buiness" :src="require('../../static/myUser/logoff.png')"></image>
 			退出登录
 			<image class="icon-goRight" :src="require('../../static/myUser/goRight.png')"></image>
 		</view>
-		<!-- 邮箱修改组件 -->
-		<!-- <van-popup show="{{ show }}" custom-style=" width: 90%;">
-		<van-cell-group>
-			<van-field model:value="{{ newEmail }}" center label="新邮箱：" placeholder="请输入邮箱">
-			</van-field>
-		</van-cell-group>
-		<view class="md">
-			<van-button class="btn" plain hairline size="small" type="danger" @click="cancel">取消</van-button>
-			<van-button plain hairline size="small" type="primary" @click="changeEmail">修改</van-button>
-		</view>
-	</van-popup> -->
-		<!-- 修改密码组件 -->
-		<!-- <van-popup show="{{ pwdshow }}" custom-style=" width: 90%;">
-		<van-cell-group>
-			<van-field model:value="{{ oldPwd }}" type="password" label="旧密码" placeholder="请输入旧密码" required border="{{ false }}" />
-			<van-field model:value="{{ newPwd }}" type="password" label="新密码" placeholder="请输入新密码" required border="{{ false }}" />
-			<van-field model:value="{{ reNewPwd }}" type="password" label="确认密码" placeholder="请输入相同新密码" required border="{{ false }}" />
-		</van-cell-group>
-		<view class="md">
-			<van-button class="btn" plain hairline size="small" type="danger" @click="cancel">取消</van-button>
-			<van-button plain hairline size="small" type="primary" @click="changePwd">修改</van-button>
-		</view>
-	</van-popup> -->
+		<!-- 邮箱模态框 -->
+		<Modal @modalClick="handlerUpdateEmail" :is-show="showEmailModal">
+			<template v-slot:title>
+				<text>修改邮箱</text>
+			</template>
+			<template v-slot:main>
+				<view class="row">
+					<text>新邮箱：</text>
+					<input class="input-inline-block" v-model.trim="newEmail" type="text" placeholder="请输入新邮箱" />
+				</view>
+			</template>
+		</Modal>
+		<!-- 密码模态框 -->
+		<Modal @modalClick="handlerUpdatePwd" :is-show="showPwdModal">
+			<template v-slot:title>
+				<text>修改密码</text>
+			</template>
+			<template v-slot:main>
+				<view class="row">
+					<text>原密码：</text>
+					<input class="input-inline-block" v-model.trim="updatePwd.oldPwd" type="text"
+						placeholder="请输入原密码" />
+				</view>
+				<view class="row">
+					<text>新密码：</text>
+					<input class="input-inline-block" v-model.trim="updatePwd.newPwd" type="text"
+						placeholder="请输入新密码" />
+				</view>
+				<view class="row">
+					<text>确认密码：</text>
+					<input class="input-inline-block" v-model.trim="updatePwd.reNewPwd" type="text"
+						placeholder="请再次输入新密码" />
+				</view>
+			</template>
+		</Modal>
 	</view>
 </template>
 
@@ -88,12 +100,18 @@
 		upPassword,
 		upHeadPortrait
 	} from '../../request/index.js'
-	// import md5 from "../../utils/md5/index.js"
+	import {
+		hex_md5 as md5
+	} from "../../utils/md5.js"
+	import Modal from "../../componets/Modal.vue"
 	export default {
+		components: {
+			Modal
+		},
 		data() {
 			return {
-				show: false,
-				pwdshow: false,
+				showEmailModal: false,
+				showPwdModal: false,
 				newEmail: '',
 				updatePwd: {
 					oldPwd: '',
@@ -101,26 +119,28 @@
 					reNewPwd: '',
 				},
 
-				userInfo: {},
+				userInfo: gld.userInfo,
 				default_pic: '../../static/headPortrait/default.png'
 			}
 
 		},
 		created() {
-			this._getUserInfo()
+			// this._getUserInfo()
 		},
 		methods: {
 			// 发送请求获取用户信息
 			async _getUserInfo() {
+
 				const res = await getUserInfo()
 				if (res.code == SUCCESSSTATE) {
 					gld.userInfo = res.data
 					console.log(res.data)
 					this.userInfo = res.data
 				}
-			},
 
-			logoff(e) {
+			},
+			// 退出
+			logout(e) {
 				// 取框本地存储和全局信息
 				uni.removeStorageSync('token')
 				gld.token = ''
@@ -132,18 +152,18 @@
 			},
 			//更换头像
 			async bindViewTap() {
-				const res = await uni.chooseMedia({
+				const choosed = await uni.chooseMedia({
 					count: 1
 				}).catch(() => {})
-				if (!res) return
+				if (!choosed) return
 				let p = res.tempFiles[0].tempFilePath
-				const res2 = await uploadFile({
+				const res = await uploadFile({
 					name: 'pic',
 					filePath: p
 				})
-				if (res2.code != SUCCESSSTATE) return
+				if (res.code != SUCCESSSTATE) return
 				const rest = await upHeadPortrait({
-					pic: res2.data.pic
+					pic: res.data.pic
 				})
 				if (rest.code == SUCCESSSTATE) {
 					this._getUserInfo()
@@ -169,74 +189,83 @@
 			},
 			// 人脸信息
 			faceClick() {
-				uni.navigateTo({
-					url: '../face/face',
-				})
+				// uni.navigateTo({
+				// 	url: '../face/face',
+				// })
 			},
-			// 邮箱图层显示
-			businessInfo() {
-				this.
-				show = true
-			},
-			// 组件取消按钮
-			cancel() {
-				this.show = false
-				this.pwdshow = false
+			// 组件取消按钮,确认完后恢复数据
+			clearData() {
+				this.showEmailModal = false
+				this.showPwdModal = false
 				this.newEmail = ''
 				this.updatePwd.oldPwd = ''
 				this.updatePwd.newPwd = ''
 				this.updatePwd.reNewPwd = ''
 			},
+
+			handlerUpdateEmail(sure) {
+				if (sure) {
+					this.changeEmail()
+				} else {
+					this.clearData()
+				}
+			},
+
+			handlerUpdatePwd(sure) {
+				if (sure) {
+					this.changePwd()
+				} else {
+					this.clearData()
+				}
+			},
 			//确定修改邮箱，发送请求
 			async changeEmail() {
-				let email = this.newEmail.trim()
+				let email = this.newEmail
 				// 验证输入合法性
-				let res = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(email)
-				if (!email || !res) return uni.showToast({
-					title: '请输入正确的邮箱!',
-					icon: 'error',
-					duration: 500
-				})
+				let checked = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(email)
+				if (!email || !checked) {
+					return uni.showToast({
+						title: '请输入正确的邮箱!',
+						icon: 'error',
+						duration: 500
+					})
+				}
 				// 合法发起请求
-				const res2 = await upEmail({
+				const res = await upEmail({
 					email
 				})
-				if (res2.code == SUCCESSSTATE) {
-					this.cancel()
+				if (res.code == SUCCESSSTATE) {
+					this.clearData()
 					// 刷新用户数据
 					this._getUserInfo()
 					uni.showToast({
-						title: res2.message,
+						title: res.message,
 						icon: 'success',
 						duration: 1000
 					})
 				} else {
 					uni.showToast({
-						title: res2.message,
+						title: res.message,
 						icon: 'error',
 						duration: 1000
 					})
 				}
 			},
-			// 显示密码修改组件
-			showPwdCmp() {
-				this.pwdshow = true
-			},
-			// 确定修改密码
+
 			async changePwd() {
-				if (!this.oldPwd.trim() || !this.newPwd.trim() || !this.reNewPwd.trim() || this.newPwd.trim() != this
-					.reNewPwd.trim()) return uni.showToast({
+				if (!this.updatePwd.oldPwd || !this.updatePwd.newPwd || !this.updatePwd.reNewPwd || this.updatePwd
+					.newPwd != this.updatePwd.reNewPwd) return uni.showToast({
 					title: '请正确输入表单',
 					icon: 'none'
-				})
+				});
 				// 正确填写 发送请求
 				const res = await upPassword({
-					oldPwd: md5(this.oldPwd.trim()),
-					newPwd: md5(this.newPwd.trim()),
-					rePassword: md5(this.reNewPwd.trim())
+					oldPwd: md5(this.updatePwd.oldPwd),
+					newPwd: md5(this.updatePwd.newPwd),
+					rePassword: md5(this.updatePwd.reNewPwd)
 				})
 				if (res.code == SUCCESSSTATE) {
-					this.cancel()
+					this.clearData()
 					uni.showToast({
 						title: res.message,
 						icon: 'success',
@@ -257,6 +286,16 @@
 
 <style lang="less" scoped>
 	@artSize: 100px;
+
+	.row {
+		display: flex;
+		align-items: center;
+		margin-top: 0.4rem;
+	}
+
+	.row:first-child {
+		margin-top: 0;
+	}
 
 	.all {
 		width: 100%
@@ -282,6 +321,10 @@
 		margin: 20rpx 0;
 		border-radius: 50%;
 		border: 5px solid rgb(246, 167, 64);
+	}
+
+	.input-inline-block {
+		display: inline-block;
 	}
 
 	.userinfo-name {

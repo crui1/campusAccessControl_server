@@ -10,7 +10,8 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "智慧校园"
+				"navigationBarTitleText": "智慧校园",
+				"enablePullDownRefresh": true
 			}
 		},
 
