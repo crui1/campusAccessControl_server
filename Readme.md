@@ -9,8 +9,8 @@
 ![管理员后台动图](./images/Video_2024-03-08_200725.gif "管理员后台演示")
 ![管理员后台动图](./images/Video_2024-03-08_200806.gif "管理员后台演示")
 ![管理员后台动图](./images/Video_2024-03-08_200925.gif "管理员后台演示")
-<img src="./images/Video_2024-03-08_201902.gif" alt="小程序演示" title="小程序演示" width="40%"/>
-<img src="./images/Video_2024-03-08_203223.gif" alt="小程序演示" title="小程序演示" width="40%"/>
+<img src="./images/Video_2024-03-08_201902.gif" alt="小程序演示" title="小程序演示" width="45%"/>
+<img src="./images/Video_2024-03-08_203223.gif" alt="小程序演示" title="小程序演示" width="45%"/>
 
 ### 一、系统综述
 
